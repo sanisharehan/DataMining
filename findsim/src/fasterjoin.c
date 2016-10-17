@@ -13,7 +13,7 @@
 
 #include "includes.h"
 
-// forward declarations
+// forward declarations.
 idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
         da_ivkv_t *hits, da_ivkv_t *i_cand, idx_t *i_marker, idx_t *ncands);
 
