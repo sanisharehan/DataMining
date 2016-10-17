@@ -1,0 +1,158 @@
+findsim - Compute the exact Min-epsilon Cosine K-Nearest Neighbor graph for a set of sparse vectors. 
+
+This program implements the IdxJoin method for solving the Min-epsilon Cosine K-Nearest Neighbor graph construction problem. Details for the methods can be found in [1].
+
+Dependencies:
+----------
+
+The program was written to run on Linux. While it has only been tested on Ubuntu and Arch Linux, it likely works with any Linux variant. Its only hard dependency is libm. 
+
+Compilation:
+----------
+
+Change directory to the build subdirectory and execute "make". The result should be an executable named "findsim". Invoke "make clean" to remove compiled code and the executable. 
+
+General Usage and Options:
+----------
+
+Invoke findsim with -h or --help to see usage information.
+ 
+Usage: findsim [options] input-file [output-file]
+ 
+ 
+ <input/output-file> should be in CSR, CLUTO, or IJV (Coordinate) format.
+ Input is assumed to be a document term-frequency matrix. Term frequencies will be scaled
+ by IDF before computing similarities.
+ If no <output-file> is specified, the output will not be saved. K-NNG output will be
+ sparse vectors, sorted in decreasing similarity order.
+ 
+ Options
+ 
+  -mode:
+    ij     Build graph using IdxJoin (full sparse dot-products). Default.
+ 
+  (utility modes):
+    info    Get information about the sparse matrix in input-file (output-file ignored).
+    testeq  Test whether matrix in input-file is the same as that in output-file.
+            Differences will be printed out to stdout.
+    io      Transform sparse matrix in input file and write to output-file in
+            specified format. Scale and Norm parameters can also be invoked.
+    recall  Compute recall of a findsim solution given true values.
+            Usage: findsim recall <true_results> <test_results>
+              
+  -k=int
+     Number of neighbors to return for each row in the Min-eps K-Nearest Neighbor Graph.
+     Default value is 10.
+ 
+  -eps=float
+     Minimum similarity for neighbors.
+     Default value is 0.5. Must be non-negative.
+  
+  -v=string
+     Verification file containing a true Min-eps K-Nearest Neighbor Graph. Must be in CSR format.
+     Default value is NULL (no verification).
+ 
+  -fmtRead=string
+     What format is the dataset stored in: clu, csr, ijv.
+     See README for format definitions.
+     Default value is 0 (detect from extension).
+ 
+  -readZidx
+     Column ids start with 0 instead of 1.
+ 
+  -readVals=int
+     Read values from file. Pertains to io mode and clu, csr, met, and ijv formats only.
+     Default value is 1.
+ 
+  -fmtWrite=string
+     What format should the output file be written in. See -fmtRead for values.
+     Default value is ijv.
+ 
+  -writeZidx
+     Column ids start with 0 instead of 1. Pertains to clu, csr, met, and ijv formats only.
+ 
+  -writeVals=int
+     Write values to file. Pertains to io mode and clu, csr, met, and ijv formats only.
+     Default value is 1.
+ 
+  -stats
+     Display additional statistics for the matrix (applies to mode 'info' only).
+ 
+  -fldelta=int
+     Float delta used when testing equality of real numbers. (testeq mode only)
+     Default value is 1e-4.
+ 
+  -verb=int
+     Specifies the level of debugging information to be displayed:
+         0 = NONE, 1 = INFO
+     Default value is 0 (NONE).
+ 
+  -version
+     Prints version information.
+ 
+  -help, -h
+     Prints this message.
+
+
+
+All parameters are optional other than input-file. Other parameters can be specified in any order, either before or after the input/output files, as desired. Use the -fmtRead parameter to specify input-file format unless it has a clearly defined format extension, e.g. ".csr".  
+
+
+Input and output formats:
+----------
+
+findsim only accepts weighted data as input. While binary (non-weighted, without stored values) versions exist of the following formats, they cannot be used as input for this program.
+
+CSR (.csr), Cluto (.clu), and Triplet/Coordinate CSR (.ijv) formats represent a sparse matrix row-wise in ascii files, as <column-id, value> pairs. Only the non-zero entries of the matrix are stored. A matrix row without any values should still exist in the file as an empty row. Column-ids start with 1. The Cluto and Metis formats contain an additional header row with metadata information. The Cluto metadata includes three integers, the number of rows (n), the number of columns (m), and the number of non-zero values (nnz). The Triplet CSR format has nnz lines containing (i,j,val) triplets in the format "%d %d %f\n".
+
+Note that some output formats do not store matrix size (e.g. CSR, IJV). A direct comparison of neighbor matrices in different formats may report that matrix sizes differ if one format stores size and the other does not (e.g. if comparing findsim output matrices and no row has the last row as its neighbor). If using the "testeq" mode for testing matrix equality, you may see output such as, "Matrix stats differ: A[9846,9846,494932] != B[10000,9846,494932]". Ignore this output and focus on the "Differences" reported below this line. Alternatively, ensure both matrices are written in IJV format before comparing.
+
+Findsim accepts a verification file which allows computing accuracy statistics for the constructed k-NN graph. The verification file must be in CSR format (no header row) and must have results in each row sorted in decreasing order of similarity. The verification file should have results for at least k nearest neighbors. The "correct recall" value in the output of the program adjusts the recall for the case in which some other neighbor(s) with the same similarity as that of the most distant neighbor was(were) included in the result.
+
+Example invocations:
+----------
+
+For all examples, ensure appropriate paths for the program and/or datasets. You can find the example datasets wiki1.csr and wiki2.csr n the build/data subdirectory.
+
+cd build/data
+
+Find the k-NNG for the matrix stored in wiki1.csr, given k=10 and eps=0.5. 
+    ../findsim -eps 0.5 -k 10 wiki1k.csr wiki1k.nbrs.csr
+
+Verify the accuracy of the constructed k-NNG. 
+    ../findsim -mode recall wiki1k.nbrs.5.10.csr wiki1k.nbrs.csr 
+
+
+References
+----------
+
+[1] David C. Anastasiu and George Karypis. L2AP: Fast Exact K-Nearest Neighbor Graph Construction with L2-Norm Pruning. In 24th ACM International Conference on Information and Knowledge Management, CIKM '15, 2015.
+
+Acknowledgments:
+----------
+
+Many CSR, I/O and memory management functions are ported from GKlib, by George Karypis.
+
+
+Citation:
+----------
+
+Please cite the following paper if you make use of this program or any of its components in your research. 
+
+David C. Anastasiu and George Karypis. L2AP: Fast Cosine Similarity Search With Prefix L-2 Norm Bounds. Proceedings of the 30th IEEE International Conference on Data Engineering (ICDE 2014).
+
+@inproceedings{anastasiu2014,
+    author = {Anastasiu, David C. and Karypis, George},
+    title = {L2AP: Fast Cosine Similarity Search With Prefix L-2 Norm Bounds},
+    booktitle = {30th IEEE International Conference on Data Engineering},
+    series = {ICDE '14},
+    year = {2014},
+    location = {Chicago, IL, USA},
+    numpages = {12},
+}
+
+
+Copyright Notice and Usage Terms:
+----------
+
+See the file named LICENSE.

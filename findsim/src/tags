@@ -1,0 +1,163 @@
+COMPERRPRINT	util.c	/^#define COMPERRPRINT(ar, ac, av, br, bc, bv, rc, f/
+COMPERRPRINT_A	util.c	/^#define COMPERRPRINT_A(ar, ac, bv, rc, fr) \\$/
+COMPERRPRINT_B	util.c	/^#define COMPERRPRINT_B(br, bc, av, rc, fr) \\$/
+COMPERRPRINT_VAL	util.c	/^#define COMPERRPRINT_VAL(ar, ac, av, bv, rc, fr) \\/
+DA_QSSWAP	sort.c	/^#define DA_QSSWAP(a, b, stmp) do { stmp = (a); (a)/
+Mmain	main.c	/^int main(int argc, char *argv[]) {$/
+NONOPTION_P	da_getopt.c	353
+PERMUTE	da_getopt.c	156
+REQUIRE_ORDER	da_getopt.c	156
+RETURN_IN_ORDER	da_getopt.c	156
+_GNU_SOURCE	da_io.c	16
+_GNU_SOURCE	da_io.c	18
+cmdline_parse	cmdline.c	/^void cmdline_parse(params_t *params, int argc, cha/
+cputimer_get	timer.c	/^inline double cputimer_get($/
+da_cpuclock	timer.c	/^double da_cpuclock(void)$/
+da_csrCompare	util.c	/^void da_csrCompare(da_csr_t* doc1, da_csr_t* doc2,/
+da_csr_Alloc	da_csr.c	/^da_csr_t* da_csr_Alloc($/
+da_csr_CheckSortedIndex	da_csr.c	/^char da_csr_CheckSortedIndex(da_csr_t* const mat, /
+da_csr_CompactColumns	da_csr.c	/^void da_csr_CompactColumns(da_csr_t* const mat)$/
+da_csr_CompactRows	da_csr.c	/^void da_csr_CompactRows(da_csr_t* const mat)$/
+da_csr_Compare	da_csr.c	/^char da_csr_Compare(const da_csr_t* const a, const/
+da_csr_ComputeSimilarity	da_csr.c	/^val_t da_csr_ComputeSimilarity(const da_csr_t* con/
+da_csr_Copy	da_csr.c	/^da_csr_t* da_csr_Copy(const da_csr_t* const mat)$/
+da_csr_Copy_a	da_csr.c	/^da_csr_t* da_csr_Copy_a($/
+da_csr_Create	da_csr.c	/^da_csr_t* da_csr_Create(void)$/
+da_csr_CreateIndex	da_csr.c	/^void da_csr_CreateIndex(da_csr_t* const mat, const/
+da_csr_CreateIndex_a	da_csr.c	/^void da_csr_CreateIndex_a(da_csr_t* const mat, con/
+da_csr_Free	da_csr.c	/^void da_csr_Free(da_csr_t** mat)$/
+da_csr_FreeAll	da_csr.c	/^void da_csr_FreeAll(da_csr_t** ptr1, ...)$/
+da_csr_FreeBase	da_csr.c	/^void da_csr_FreeBase(da_csr_t* const mat, const ch/
+da_csr_FreeContents	da_csr.c	/^void da_csr_FreeContents(da_csr_t* const mat)$/
+da_csr_Grow	da_csr.c	/^void da_csr_Grow(da_csr_t* const mat, const ptr_t /
+da_csr_Grow_a	da_csr.c	/^void da_csr_Grow_a($/
+da_csr_Init	da_csr.c	/^void da_csr_Init(da_csr_t* const mat)$/
+da_csr_LoadBases	da_csr.c	/^void da_csr_LoadBases(da_csr_t* const csr)$/
+da_csr_Normalize	da_csr.c	/^void da_csr_Normalize(da_csr_t* const mat, const c/
+da_csr_Print	da_csr.c	/^void da_csr_Print(const da_csr_t* const mat)$/
+da_csr_PrintInfo	da_csr.c	/^void da_csr_PrintInfo($/
+da_csr_Read	da_csr.c	/^da_csr_t* da_csr_Read(const char* const filename,$/
+da_csr_Scale	da_csr.c	/^void da_csr_Scale(da_csr_t* const mat)$/
+da_csr_SortIndices	da_csr.c	/^void da_csr_SortIndices(da_csr_t* const mat, const/
+da_csr_SortValues	da_csr.c	/^void da_csr_SortValues($/
+da_csr_Transpose	da_csr.c	/^void da_csr_Transpose($/
+da_csr_Write	da_csr.c	/^void da_csr_Write(const da_csr_t* const mat, const/
+da_csr_isClutoOrCsr	da_csr.c	/^char da_csr_isClutoOrCsr(const char* const file)$/
+da_dexists	da_io.c	/^int da_dexists(const char* const dirname)$/
+da_errexit	util.c	/^void da_errexit(const char* const f_str,...)$/
+da_fclose	da_io.c	/^void da_fclose(FILE* fp)$/
+da_fexists	da_io.c	/^int da_fexists(const char* const fname)$/
+da_fopen	da_io.c	/^FILE* da_fopen(const char* const fname, const char/
+da_free	memory.c	/^void da_free($/
+da_getFileFormat	util.c	/^char da_getFileFormat(char *file, const char forma/
+da_getSimilarRows	fasterjoin.c	/^idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, /
+da_getSimilarRows	idxjoin.c	/^idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, /
+da_getStringID	da_string.c	/^int da_getStringID(const da_StringMap_t* const str/
+da_getStringKey	da_string.c	/^char* da_getStringKey(const da_StringMap_t* const /
+da_getbasename	da_io.c	/^char* da_getbasename(const char* const path)$/
+da_getextname	da_io.c	/^char* da_getextname(const char* const path)$/
+da_getfilename	da_io.c	/^char* da_getfilename(const char* const path)$/
+da_getfilestats	da_io.c	/^void da_getfilestats(const char* const fname, size/
+da_getfsize	da_io.c	/^ssize_t da_getfsize(const char* const filename)$/
+da_getline	da_io.c	/^ssize_t da_getline(char** lineptr, size_t* n, FILE/
+da_getopt	da_getopt.c	/^int da_getopt(int argc, char **argv, char *options/
+da_getopt_initialize	da_getopt.c	/^static char *da_getopt_initialize (int argc, char /
+da_getopt_initialized	da_getopt.c	100
+da_getopt_internal	da_getopt.c	/^static int da_getopt_internal(int argc, char **arg/
+da_getopt_long	da_getopt.c	/^int da_getopt_long( int argc, char **argv, char *o/
+da_getopt_long_only	da_getopt.c	/^int da_getopt_long_only(int argc, char **argv, cha/
+da_getpathname	da_io.c	/^char* da_getpathname(const char* const path)$/
+da_iarreq	da_csr.c	/^static char da_iarreq(const size_t n, const idx_t*/
+da_iikv_gt	sort.c	/^#define da_iikv_gt(a, b) ((a)->val > (b)->val)$/
+da_iikv_gt	sort.c	104
+da_iikv_lt	sort.c	/^#define da_iikv_lt(a, b) ((a)->val < (b)->val)$/
+da_iikv_lt	sort.c	93
+da_iikvsortd	sort.c	/^void da_iikvsortd(const size_t n, da_iikv_t* const/
+da_iikvsorti	sort.c	/^void da_iikvsorti(const size_t n, da_iikv_t* const/
+da_isortd	sort.c	/^void da_isortd(const size_t n, idx_t* const base)$/
+da_isorti	sort.c	/^void da_isorti(const size_t n, idx_t* const base)$/
+da_ivkv_gt	sort.c	/^#define da_ivkv_gt(a, b) ((a)->val > (b)->val)$/
+da_ivkv_gt	sort.c	147
+da_ivkv_lt	sort.c	/^#define da_ivkv_lt(a, b) ((a)->val < (b)->val)$/
+da_ivkv_lt	sort.c	136
+da_ivkvkselectd	sort.c	/^idx_t da_ivkvkselectd(size_t n, idx_t topk, da_ivk/
+da_ivkvkselecti	sort.c	/^idx_t da_ivkvkselecti(size_t n, idx_t topk, da_ivk/
+da_ivkvsortd	sort.c	/^void da_ivkvsortd(const size_t n, da_ivkv_t* const/
+da_ivkvsorti	sort.c	/^void da_ivkvsorti(const size_t n, da_ivkv_t* const/
+da_malloc	memory.c	/^void *da_malloc($/
+da_malloc_a	memory.c	/^void *da_malloc_a($/
+da_matalloc	memory.c	/^void da_matalloc($/
+da_matalloc_a	memory.c	/^void da_matalloc_a($/
+da_matfree	memory.c	/^void da_matfree($/
+da_matrixInfo	main.c	/^void da_matrixInfo(params_t *params){$/
+da_matrixIo	main.c	/^void da_matrixIo(params_t *params){$/
+da_mkpath	da_io.c	/^int da_mkpath(const char* const path)$/
+da_nmalloc	memory.c	/^void *da_nmalloc($/
+da_nmalloc_a	memory.c	/^void *da_nmalloc_a($/
+da_nrealloc	memory.c	/^void *da_nrealloc($/
+da_nrealloc_a	memory.c	/^void *da_nrealloc_a($/
+da_optarg	da_getopt.c	56
+da_opterr	da_getopt.c	81
+da_optind	da_getopt.c	68
+da_optopt	da_getopt.c	92
+da_parreq	da_csr.c	/^static char da_parreq(const size_t n, const ptr_t*/
+da_pikv_gt	sort.c	/^#define da_pikv_gt(a, b) ((a)->val > (b)->val)$/
+da_pikv_gt	sort.c	125
+da_pikv_lt	sort.c	/^#define da_pikv_lt(a, b) ((a)->val < (b)->val)$/
+da_pikv_lt	sort.c	114
+da_pikvsortd	sort.c	/^void da_pikvsortd(const size_t n, da_pikv_t* const/
+da_pikvsorti	sort.c	/^void da_pikvsorti(const size_t n, da_pikv_t* const/
+da_printTime	timer.c	/^void da_printTime($/
+da_printTimeLong	timer.c	/^void da_printTimeLong($/
+da_printTimer	timer.c	/^void da_printTimer($/
+da_printTimerLong	timer.c	/^void da_printTimerLong($/
+da_psortd	sort.c	/^void da_psortd(const size_t n, ptr_t* const base)$/
+da_psorti	sort.c	/^void da_psorti(const size_t n, ptr_t* const base)$/
+da_read	da_io.c	/^ssize_t da_read(const int fd, void* vbuf, const si/
+da_readfile	da_io.c	/^char** da_readfile(const char* const fname, size_t/
+da_realloc	memory.c	/^void* da_realloc($/
+da_realloc_a	memory.c	/^void* da_realloc_a($/
+da_rmpath	da_io.c	/^int da_rmpath(const char* const path)$/
+da_strcasecmp	da_string.c	/^int da_strcasecmp(const char* const s1, const char/
+da_strchr_replace	da_string.c	/^char* da_strchr_replace(char* const str, const cha/
+da_strdup	da_string.c	/^char* da_strdup(const char* const orgstr)$/
+da_strhprune	da_string.c	/^char* da_strhprune(char* const str, const char* co/
+da_strrcmp	da_string.c	/^int da_strrcmp(const char* const s1, const char* c/
+da_strtolower	da_string.c	/^char* da_strtolower(char* const str)$/
+da_strtoupper	da_string.c	/^char* da_strtoupper(char* const str)$/
+da_strtprune	da_string.c	/^char* da_strtprune(char* const str, const char* co/
+da_testMatricesEqual	main.c	/^void da_testMatricesEqual(params_t *params){$/
+da_testRecall	main.c	/^void da_testRecall(params_t *params){$/
+da_time2str	da_string.c	/^char* da_time2str(time_t time)$/
+da_varreq_p	da_csr.c	/^static char da_varreq_p(const size_t n, const val_/
+da_vsortd	sort.c	/^void da_vsortd(const size_t n, val_t* const base)$/
+da_vsorti	sort.c	/^void da_vsorti(const size_t n, val_t* const base)$/
+da_wallclock	timer.c	/^double da_wallclock(void)$/
+exchange	da_getopt.c	/^static void exchange (char **argv)$/
+findNeighbors	fasterjoin.c	/^void findNeighbors(params_t *params)$/
+findNeighbors	idxjoin.c	/^void findNeighbors(params_t *params)$/
+first_nonopt	da_getopt.c	168
+float_gt	sort.c	/^#define float_gt(a, b) ((*a) > (*b))$/
+float_gt	sort.c	83
+fmt_options	cmdline.c	134
+freeParams	main.c	/^void freeParams(params_t** params){$/
+helpstr	cmdline.c	38
+idx_gt	sort.c	/^#define idx_gt(a, b) ((*a) > (*b))$/
+idx_gt	sort.c	61
+idx_lt	sort.c	/^#define idx_lt(a, b) ((*a) < (*b))$/
+idx_lt	sort.c	50
+last_nonopt	da_getopt.c	169
+long_options	cmdline.c	13
+mode_options	cmdline.c	121
+nextchar	da_getopt.c	113
+ordering	da_getopt.c	157
+posixly_correct	da_getopt.c	121
+ptr_gt	sort.c	/^#define ptr_gt(a, b) ((*a) > (*b))$/
+ptr_gt	sort.c	39
+ptr_lt	sort.c	/^#define ptr_lt(a, b) ((*a) < (*b))$/
+ptr_lt	sort.c	28
+readInputData	main.c	/^void readInputData(params_t *params){$/
+timer_get	timer.c	/^inline double timer_get($/
+val_lt	sort.c	/^#define val_lt(a, b) ((*a) < (*b))$/
+val_lt	sort.c	72
+verify_knng_results	util.c	/^void verify_knng_results(da_csr_t *ngbrs1, da_csr_/
