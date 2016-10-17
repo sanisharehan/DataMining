@@ -65,6 +65,7 @@ typedef unsigned int uint;
 #define MODE_INFO               97  /* Find information about a matrix */
 #define MODE_RECALL             96  /* Compute recall given true solution */
 #define MODE_IDXJOIN            1   /* IdxJoin */
+#define MODE_FAST               2   /* Faster Code */
 
 
 /* CSR structure components */

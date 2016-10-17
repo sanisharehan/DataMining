@@ -758,7 +758,7 @@ void da_csr_CompactRows(da_csr_t* const mat)
 
 
 /*************************************************************************/
-/*! Sorts the indices in increasing order (whether matrix has values or not)
+/*! Sorts the indices in increasing order (whether matrix has values or not).
     \param mat the matrix itself,
     \param what is either DA_ROW or DA_COL indicating which set of
            indices to sort.
@@ -801,11 +801,13 @@ void da_csr_SortIndices(da_csr_t* const mat, const char what)
     da_pikv_t *cand;
     val_t *tval = NULL;
 
-    for (i=0; i<n; ++i)
-        nn = da_max(nn, ptr[i+1]-ptr[i]);
+    // Find maximum number of features in any vector.
+    for (i=0; i < n; ++i) {
+        nn = da_max(nn, ptr[i+1] - ptr[i]);
+    }
 
     cand = da_pikvmalloc(nn, "da_csr_SortIndices: cand");
-    if(val){
+    if(val) {
         tval = da_vmalloc(nn, "da_csr_SortIndices: tval");
 
         for (i=0; i<n; ++i) {
@@ -846,10 +848,7 @@ void da_csr_SortIndices(da_csr_t* const mat, const char what)
 
     }
     da_free((void **)&cand, &tval, LTERM);
-
-
 }
-
 
 
 /*************************************************************************/
@@ -1218,7 +1217,7 @@ void da_csr_CreateIndex_a(da_csr_t* const mat, const char what)
 
 
 /*************************************************************************/
-/*! Normalizes the rows/columns of the matrix to be unit
+/*! Normalizes the rows/columns of the matrix to be unit.
     length.
     \param mat the matrix itself,
     \param what indicates what will be normalized and is obtained by
@@ -1306,21 +1305,20 @@ void da_csr_Scale(da_csr_t* const mat)
     cscale = da_dmalloc(ncols, "da_csr_Scale: cscale");
     collen = da_inmalloc(ncols, "da_csr_Scale: collen");
 
-    for (i=0; i<nrows; ++i) {
+    for (i=0; i < nrows; ++i) {
         for (j=rowptr[i]; j<rowptr[i+1]; ++j)
             collen[rowind[j]]++;
     }
 
-    for (i=0; i<ncols; ++i)
+    for (i=0; i < ncols; ++i)
         cscale[i] = (collen[i] > 0 ? log(1.0*nrows/collen[i]) : 0.0);
 
-    for (i=0; i<nrows; ++i) {
-        for (j=rowptr[i]; j<rowptr[i+1]; ++j)
+    for (i=0; i < nrows; ++i) {
+        for (j=rowptr[i]; j < rowptr[i+1]; ++j)
             rowval[j] *= cscale[rowind[j]];
     }
 
     da_free((void **)&cscale, &collen, LTERM);
-
 }
 
 

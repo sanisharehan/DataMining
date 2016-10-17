@@ -14,13 +14,13 @@
 #include "includes.h"
 
 // forward declarations.
-idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
+idx_t fast_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
         da_ivkv_t *hits, da_ivkv_t *i_cand, idx_t *i_marker, idx_t *ncands);
 
 /**
  * Main entry point to KnnIdxJoin.
  */
-void findNeighbors(params_t *params)
+void fast_findNeighbors(params_t *params)
 {
 
 	ssize_t i, j, k, nneighbs;
@@ -28,6 +28,26 @@ void findNeighbors(params_t *params)
 	idx_t nrows, ncand, progressInd, pct;
 	idx_t *marker=NULL;
 	da_ivkv_t *hits=NULL, *cand=NULL;
+
+
+    // This is the main data structure.
+    // da_csr_t. Compressed row storage.
+    //
+    // row_ptr stores the index from which data for a data vector starts.
+    // col_ind stores the index of the dimension in the corresponding row_val. 
+    // and as you guessed correctly row_val is the actual value stored in the sparse 2-D matrix.
+    //
+    // Example:
+    // Matrix:
+    //
+    // 10 0 0 0 -2 0
+    //  3 9 0 0  0 3
+    //  0 7 8 7  0 0
+    //  3 0 8 7  5 0
+    //
+    // vals = [10, -2, 3, 9, 3, 7, 8, 7, 3, 8, 7, 5]
+    // indx = [ 0,  4, 0, 1, 5, 1, 2, 3, 0, 2, 3, 4]
+    // ptrs = [0, 2, 5, 8, 12]
 	da_csr_t *docs, *neighbors=NULL;
 
 	docs    = params->docs;
@@ -37,24 +57,42 @@ void findNeighbors(params_t *params)
 
 	/** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
 
-    /* compact the column space */
+    // 1) Remove the empty columns. 
+    // 2) Re-number columns.
+    // 3) Sorts columns by decreasing order of frequency, i.e features which are most
+    //    column are put in front.
+    // Re-numbering is fine, because we only care about the row numbers. Columns we 
+    // can tweak whatever way we want.
     da_csr_CompactColumns(docs);
-    if(params->verbosity > 0)
+
+
+    if(params->verbosity > 0) {
         printf("Docs matrix: " PRNT_IDXTYPE " rows, " PRNT_IDXTYPE " cols, "
             PRNT_PTRTYPE " nnz\n", docs->nrows, docs->ncols, docs->rowptr[docs->nrows]);
+    }
 
     /* sort the column space */
+    // Once this is done, all the columns would be sorted for each row.
     da_csr_SortIndices(docs, DA_ROW);
 
     /* scale term values */
     if(params->verbosity > 0)
-        printf("   Scaling input matrix.\n");
+        printf("Scaling input matrix.\n");
+
+    // IDF(Inverse document frequency) scaling is required to reuduce the impact of words like "the", "this".
+    //
+    // While doing document matching, we should be discounting the columns which have the highest frequency.
+    // Essentially, all frequency values would be scaled down as 
+    // val[i] = val[i] * log (total_documents / total_occurence_of_word (total of that column across all vectors/documnets).
+    //
     da_csr_Scale(docs);
 
 
 	timer_start(params->timer_3); /* overall knn graph construction time */
 
     /* normalize docs rows */
+    // Here all we do is divide each value in the row by
+    // SQRT(sum of squares of all values in vector).
     da_csr_Normalize(docs, DA_ROW, 2);
 
     /* create inverted index - column version of the matrix */
@@ -68,6 +106,8 @@ void findNeighbors(params_t *params)
     cand   = da_ivkvsmalloc(nrows, (da_ivkv_t) {0, 0.0}, "findNeighbors: cand"); /* empty list of key-value structures */
     marker = da_ismalloc(nrows, -1, "findNeighbors: marker");  /* array of all -1 values */
 
+
+    /// COME BACK HERE AND START READING FROM THIS POINT !!!!!
     neighbors = da_csr_Create();
     neighbors->nrows = neighbors->ncols = nrows;
     nnz = params->k * docs->nrows; /* max number of neighbors */
@@ -84,7 +124,7 @@ void findNeighbors(params_t *params)
 
 	/* execute search */
 	for(nsims=0, i=0; i < nrows; i++){
-		k = da_getSimilarRows(docs, i, params->k, params->epsilon, hits, cand, marker, &ncand);
+		k = fast_getSimilarRows(docs, i, params->k, params->epsilon, hits, cand, marker, &ncand);
 		ncands += ncand;
 
 		/* transfer candidates to output structure */
@@ -135,7 +175,7 @@ void findNeighbors(params_t *params)
  *
  * \return Number of similar pairs found
  */
-idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
+idx_t fast_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
         da_ivkv_t *hits, da_ivkv_t *i_cand, idx_t *i_marker, idx_t *ncands)
 {
 	ssize_t i, ii, j, k, qsz;

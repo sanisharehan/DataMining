@@ -54,6 +54,10 @@ int main(int argc, char *argv[]) {
         findNeighbors(params);
         break;
 
+    case MODE_FAST:
+        fast_findNeighbors(params);
+        break;
+
     case MODE_TESTEQUAL:
         da_testMatricesEqual(params);
         break;

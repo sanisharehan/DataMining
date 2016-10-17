@@ -1,17 +1,108 @@
+ASSERT	macros.h	/^    #define ASSERT(expr)                          /
+ASSERT	macros.h	/^    #define ASSERT(expr) ;$/
+ASSERTP	macros.h	/^    #define ASSERTP(expr,msg)                     /
+ASSERTP	macros.h	/^    #define ASSERTP(expr,msg) ;$/
+CMD_EPSILON	defs.h	42
+CMD_FMT_READ	defs.h	47
+CMD_FMT_READ_NUM	defs.h	48
+CMD_FMT_WRITE	defs.h	43
+CMD_FMT_WRITE_NUM	defs.h	44
+CMD_HELP	defs.h	54
+CMD_K	defs.h	41
+CMD_MODE	defs.h	40
+CMD_READ_NUMBERING	defs.h	50
+CMD_READ_VALS	defs.h	49
+CMD_VERBOSITY	defs.h	52
+CMD_VERIFY	defs.h	51
+CMD_VERSION	defs.h	53
+CMD_WRITE_NUMBERING	defs.h	46
+CMD_WRITE_VALS	defs.h	45
 COMPERRPRINT	util.c	/^#define COMPERRPRINT(ar, ac, av, br, bc, bv, rc, f/
 COMPERRPRINT_A	util.c	/^#define COMPERRPRINT_A(ar, ac, bv, rc, fr) \\$/
 COMPERRPRINT_B	util.c	/^#define COMPERRPRINT_B(br, bc, av, rc, fr) \\$/
 COMPERRPRINT_VAL	util.c	/^#define COMPERRPRINT_VAL(ar, ac, av, bv, rc, fr) \\/
+CSRMAKE	macros.h	/^#define CSRMAKE(i, n, a) \\$/
+CSRSHIFT	macros.h	/^#define CSRSHIFT(i, n, a) \\$/
+DA_COL	defs.h	73
+DA_FMT_CLUTO	defs.h	83
+DA_FMT_CSR	defs.h	81
+DA_FMT_IJV	defs.h	84
+DA_FMT_METIS	defs.h	82
+DA_INC_DEC	macros.h	/^#define DA_INC_DEC(a, b, val) do {(a) += (val); (b/
+DA_MKALLOC	da_mkmemory.h	/^#define DA_MKALLOC(PRFX, TYPE)\\$/
+DA_MKQSORT	da_mksort.h	/^#define DA_MKQSORT(DAQSORT_TYPE,DAQSORT_BASE,DAQSO/
+DA_MKSORT_PROTO	proto.h	/^#define DA_MKSORT_PROTO(PRFX, TYPE) \\$/
+DA_MKSORT_PROTO	proto.h	/^DA_MKSORT_PROTO(da_p, ptr_t)$/
 DA_QSSWAP	sort.c	/^#define DA_QSSWAP(a, b, stmp) do { stmp = (a); (a)/
+DA_ROW	defs.h	72
+DA_ROWCOL	defs.h	74
+DA_SORT_D	defs.h	78
+DA_SORT_I	defs.h	77
+DA_SWAP	macros.h	/^#define DA_SWAP(a, b, tmp) do {(tmp) = (a); (a) = /
+F_NEQUALS_P	macros.h	/^#define F_NEQUALS_P(a,b,p) \\$/
+IDX_MAX	defs.h	24
+IDX_MIN	defs.h	25
+LTERM	defs.h	59
+MAXIDX	defs.h	27
+MAX_RUNTIME	timer.h	35
+MEMORY_ALIGNMENT	memory.h	24
+MEM_IS_ALIGNED	memory.h	/^#define MEM_IS_ALIGNED(ptr, nbytes) \\$/
+MEM_NOT_ALIGNED	memory.h	/^#define MEM_NOT_ALIGNED(ptr, nbytes) \\$/
+MODE_FAST	defs.h	68
+MODE_IDXJOIN	defs.h	67
+MODE_INFO	defs.h	65
+MODE_IO	defs.h	64
+MODE_RECALL	defs.h	66
+MODE_TESTEQUAL	defs.h	63
 Mmain	main.c	/^int main(int argc, char *argv[]) {$/
 NONOPTION_P	da_getopt.c	353
+NPCT	macros.h	52
 PERMUTE	da_getopt.c	156
+PRNT_IDXTYPE	defs.h	26
+PRNT_PTRTYPE	defs.h	31
+PRNT_VALTYPE	defs.h	35
+PROGRAM_NAME	defs.h	11
+PTR_MAX	defs.h	29
+PTR_MIN	defs.h	30
 REQUIRE_ORDER	da_getopt.c	156
 RETURN_IN_ORDER	da_getopt.c	156
+VAL_MAX	defs.h	33
+VAL_MIN	defs.h	34
+VER_COMMENT	defs.h	15
+VER_MAJOR	defs.h	12
+VER_MINOR	defs.h	13
+VER_SUBMINOR	defs.h	14
+_DAQSORT_MAX_THRESH	da_mksort.h	111
+_DAQSORT_POP	da_mksort.h	/^#define	_DAQSORT_POP(low, high, top)  ((--top, (lo/
+_DAQSORT_PUSH	da_mksort.h	/^#define _DAQSORT_PUSH(top, low, high) (((top->_lo /
+_DAQSORT_STACK_NOT_EMPTY	da_mksort.h	117
+_DAQSORT_STACK_SIZE	da_mksort.h	114
+_DAQSORT_SWAP	da_mksort.h	/^#define _DAQSORT_SWAP(a, b, t) ((void)((t = *a), (/
+_FINDSIM_DEFS_H_	defs.h	8
+_FINDSIM_GETOPT_H_	da_getopt.h	13
+_FINDSIM_INCLUDES_	includes.h	9
+_FINDSIM_MACROS_H_	macros.h	9
+_FINDSIM_MEMORY_H_	memory.h	9
+_FINDSIM_MKMEMORY_H_	da_mkmemory.h	12
+_FINDSIM_MKSORT_H_	da_mksort.h	13
+_FINDSIM_PROTO_H_	proto.h	8
+_FINDSIM_STRUCT_H_	struct.h	8
+_FINDSIM_TIMER_	timer.h	4
 _GNU_SOURCE	da_io.c	16
 _GNU_SOURCE	da_io.c	18
+buf	struct.h	48
 cmdline_parse	cmdline.c	/^void cmdline_parse(params_t *params, int argc, cha/
+cnorms	struct.h	60
+colind	struct.h	58
+colptr	struct.h	57
+colval	struct.h	59
+cputimer_clear	timer.h	/^#define cputimer_clear(tmr) (tmr = 0.0)$/
 cputimer_get	timer.c	/^inline double cputimer_get($/
+cputimer_start	timer.h	/^#define cputimer_start(tmr) do {if(tmr > MAX_RUNTI/
+cputimer_stop	timer.h	/^#define cputimer_stop(tmr)  do {if(tmr < MAX_RUNTI/
+da_StringMap_t	struct.h	32
+da_StringMap_t	struct.h	35
+da_abs	macros.h	/^#define da_abs(x) ((x) >= 0 ? (x) : -(x))$/
 da_cpuclock	timer.c	/^double da_cpuclock(void)$/
 da_csrCompare	util.c	/^void da_csrCompare(da_csr_t* doc1, da_csr_t* doc2,/
 da_csr_Alloc	da_csr.c	/^da_csr_t* da_csr_Alloc($/
@@ -43,6 +134,8 @@ da_csr_SortValues	da_csr.c	/^void da_csr_SortValues($/
 da_csr_Transpose	da_csr.c	/^void da_csr_Transpose($/
 da_csr_Write	da_csr.c	/^void da_csr_Write(const da_csr_t* const mat, const/
 da_csr_isClutoOrCsr	da_csr.c	/^char da_csr_isClutoOrCsr(const char* const file)$/
+da_csr_t	struct.h	55
+da_csr_t	struct.h	61
 da_dexists	da_io.c	/^int da_dexists(const char* const dirname)$/
 da_errexit	util.c	/^void da_errexit(const char* const f_str,...)$/
 da_fclose	da_io.c	/^void da_fclose(FILE* fp)$/
@@ -50,7 +143,6 @@ da_fexists	da_io.c	/^int da_fexists(const char* const fname)$/
 da_fopen	da_io.c	/^FILE* da_fopen(const char* const fname, const char/
 da_free	memory.c	/^void da_free($/
 da_getFileFormat	util.c	/^char da_getFileFormat(char *file, const char forma/
-da_getSimilarRows	fasterjoin.c	/^idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, /
 da_getSimilarRows	idxjoin.c	/^idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, /
 da_getStringID	da_string.c	/^int da_getStringID(const da_StringMap_t* const str/
 da_getStringKey	da_string.c	/^char* da_getStringKey(const da_StringMap_t* const /
@@ -72,6 +164,7 @@ da_iikv_gt	sort.c	/^#define da_iikv_gt(a, b) ((a)->val > (b)->val)$/
 da_iikv_gt	sort.c	104
 da_iikv_lt	sort.c	/^#define da_iikv_lt(a, b) ((a)->val < (b)->val)$/
 da_iikv_lt	sort.c	93
+da_iikv_t	struct.h	16
 da_iikvsortd	sort.c	/^void da_iikvsortd(const size_t n, da_iikv_t* const/
 da_iikvsorti	sort.c	/^void da_iikvsorti(const size_t n, da_iikv_t* const/
 da_isortd	sort.c	/^void da_isortd(const size_t n, idx_t* const base)$/
@@ -80,6 +173,7 @@ da_ivkv_gt	sort.c	/^#define da_ivkv_gt(a, b) ((a)->val > (b)->val)$/
 da_ivkv_gt	sort.c	147
 da_ivkv_lt	sort.c	/^#define da_ivkv_lt(a, b) ((a)->val < (b)->val)$/
 da_ivkv_lt	sort.c	136
+da_ivkv_t	struct.h	24
 da_ivkvkselectd	sort.c	/^idx_t da_ivkvkselectd(size_t n, idx_t topk, da_ivk/
 da_ivkvkselecti	sort.c	/^idx_t da_ivkvkselecti(size_t n, idx_t topk, da_ivk/
 da_ivkvsortd	sort.c	/^void da_ivkvsortd(const size_t n, da_ivkv_t* const/
@@ -91,6 +185,9 @@ da_matalloc_a	memory.c	/^void da_matalloc_a($/
 da_matfree	memory.c	/^void da_matfree($/
 da_matrixInfo	main.c	/^void da_matrixInfo(params_t *params){$/
 da_matrixIo	main.c	/^void da_matrixIo(params_t *params){$/
+da_max	macros.h	/^#define da_max(a, b) ((a) >= (b) ? (a) : (b))$/
+da_max3	macros.h	/^#define da_max3(a, b, c) ((a) >= (b) && (a) >= (c)/
+da_min	macros.h	/^#define da_min(a, b) ((a) >= (b) ? (b) : (a))$/
 da_mkpath	da_io.c	/^int da_mkpath(const char* const path)$/
 da_nmalloc	memory.c	/^void *da_nmalloc($/
 da_nmalloc_a	memory.c	/^void *da_nmalloc_a($/
@@ -99,18 +196,30 @@ da_nrealloc_a	memory.c	/^void *da_nrealloc_a($/
 da_optarg	da_getopt.c	56
 da_opterr	da_getopt.c	81
 da_optind	da_getopt.c	68
+da_option	da_getopt.h	30
 da_optopt	da_getopt.c	92
 da_parreq	da_csr.c	/^static char da_parreq(const size_t n, const ptr_t*/
 da_pikv_gt	sort.c	/^#define da_pikv_gt(a, b) ((a)->val > (b)->val)$/
 da_pikv_gt	sort.c	125
 da_pikv_lt	sort.c	/^#define da_pikv_lt(a, b) ((a)->val < (b)->val)$/
 da_pikv_lt	sort.c	114
+da_pikv_t	struct.h	20
 da_pikvsortd	sort.c	/^void da_pikvsortd(const size_t n, da_pikv_t* const/
 da_pikvsorti	sort.c	/^void da_pikvsorti(const size_t n, da_pikv_t* const/
+da_printETimer	timer.h	59
+da_printETimer	timer.h	70
+da_printETimerLong	timer.h	60
+da_printETimerLong	timer.h	71
 da_printTime	timer.c	/^void da_printTime($/
 da_printTimeLong	timer.c	/^void da_printTimeLong($/
 da_printTimer	timer.c	/^void da_printTimer($/
 da_printTimerLong	timer.c	/^void da_printTimerLong($/
+da_progress_advance	macros.h	/^#define da_progress_advance(pct) \\$/
+da_progress_advance_steps	macros.h	/^#define da_progress_advance_steps(pct, nsteps) \\$/
+da_progress_finalize	macros.h	/^#define da_progress_finalize(pct) \\$/
+da_progress_finalize_steps	macros.h	/^#define da_progress_finalize_steps(pct, nsteps) \\$/
+da_progress_init	macros.h	/^#define da_progress_init(pct, indicator, niteratio/
+da_progress_init_steps	macros.h	/^#define da_progress_init_steps(pct, indicator, nit/
 da_psortd	sort.c	/^void da_psortd(const size_t n, ptr_t* const base)$/
 da_psorti	sort.c	/^void da_psorti(const size_t n, ptr_t* const base)$/
 da_read	da_io.c	/^ssize_t da_read(const int fd, void* vbuf, const si/
@@ -118,6 +227,9 @@ da_readfile	da_io.c	/^char** da_readfile(const char* const fname, size_t/
 da_realloc	memory.c	/^void* da_realloc($/
 da_realloc_a	memory.c	/^void* da_realloc_a($/
 da_rmpath	da_io.c	/^int da_rmpath(const char* const path)$/
+da_sign	macros.h	/^#define da_sign(a, b) ((a >= 0 ? b : -b))$/
+da_str_t	struct.h	46
+da_str_t	struct.h	49
 da_strcasecmp	da_string.c	/^int da_strcasecmp(const char* const s1, const char/
 da_strchr_replace	da_string.c	/^char* da_strchr_replace(char* const str, const cha/
 da_strdup	da_string.c	/^char* da_strdup(const char* const orgstr)$/
@@ -133,31 +245,107 @@ da_varreq_p	da_csr.c	/^static char da_varreq_p(const size_t n, const val_/
 da_vsortd	sort.c	/^void da_vsortd(const size_t n, val_t* const base)$/
 da_vsorti	sort.c	/^void da_vsorti(const size_t n, val_t* const base)$/
 da_wallclock	timer.c	/^double da_wallclock(void)$/
+docs	struct.h	88
+ecputimer_clear	timer.h	55
+ecputimer_clear	timer.h	/^    #define ecputimer_clear(tmr) {}$/
+ecputimer_get	timer.h	58
+ecputimer_get	timer.h	/^    #define ecputimer_get(tmr) (0.0)$/
+ecputimer_start	timer.h	56
+ecputimer_start	timer.h	/^    #define ecputimer_start(tmr) {}$/
+ecputimer_stop	timer.h	57
+ecputimer_stop	timer.h	/^    #define ecputimer_stop(tmr) {}$/
+epsilon	struct.h	72
+etimer_clear	timer.h	51
+etimer_clear	timer.h	/^    #define etimer_clear(tmr) {}$/
+etimer_get	timer.h	54
+etimer_get	timer.h	/^    #define etimer_get(tmr) (0.0)$/
+etimer_start	timer.h	52
+etimer_start	timer.h	/^    #define etimer_start(tmr) {}$/
+etimer_stop	timer.h	53
+etimer_stop	timer.h	/^    #define etimer_stop(tmr) {}$/
 exchange	da_getopt.c	/^static void exchange (char **argv)$/
-findNeighbors	fasterjoin.c	/^void findNeighbors(params_t *params)$/
+fast_findNeighbors	fasterjoin.c	/^void fast_findNeighbors(params_t *params)$/
+fast_getSimilarRows	fasterjoin.c	/^idx_t fast_getSimilarRows(da_csr_t *mat, idx_t rid/
+filename	struct.h	87
 findNeighbors	idxjoin.c	/^void findNeighbors(params_t *params)$/
 first_nonopt	da_getopt.c	168
+flag	da_getopt.h	36
+fldelta	struct.h	75
 float_gt	sort.c	/^#define float_gt(a, b) ((*a) > (*b))$/
 float_gt	sort.c	83
-fmt_options	cmdline.c	134
+fmtRead	struct.h	77
+fmtWrite	struct.h	80
+fmt_options	cmdline.c	135
 freeParams	main.c	/^void freeParams(params_t** params){$/
+has_arg	da_getopt.h	32
 helpstr	cmdline.c	38
+iFile	struct.h	84
+id	struct.h	34
 idx_gt	sort.c	/^#define idx_gt(a, b) ((*a) > (*b))$/
 idx_gt	sort.c	61
 idx_lt	sort.c	/^#define idx_lt(a, b) ((*a) < (*b))$/
 idx_lt	sort.c	50
+idx_t	defs.h	23
+k	struct.h	71
+key	struct.h	14
+key	struct.h	18
+key	struct.h	22
 last_nonopt	da_getopt.c	169
+len	struct.h	47
 long_options	cmdline.c	13
+mode	struct.h	70
 mode_options	cmdline.c	121
+name	da_getopt.h	31
+name	struct.h	33
+ncols	struct.h	56
+neighbors	struct.h	89
 nextchar	da_getopt.c	113
+no_argument	da_getopt.h	51
+nrows	struct.h	56
+oFile	struct.h	85
+optional_argument	da_getopt.h	53
 ordering	da_getopt.c	157
+params_t	struct.h	105
 posixly_correct	da_getopt.c	121
+progressInd	struct.h	92
 ptr_gt	sort.c	/^#define ptr_gt(a, b) ((*a) > (*b))$/
 ptr_gt	sort.c	39
 ptr_lt	sort.c	/^#define ptr_lt(a, b) ((*a) < (*b))$/
 ptr_lt	sort.c	28
+ptr_t	defs.h	28
 readInputData	main.c	/^void readInputData(params_t *params){$/
+readNum	struct.h	79
+readVals	struct.h	78
+required_argument	da_getopt.h	52
+rnorms	struct.h	60
+rowind	struct.h	58
+rowptr	struct.h	57
+rowval	struct.h	59
+stats	struct.h	74
+timer_1	struct.h	96
+timer_2	struct.h	97
+timer_3	struct.h	98
+timer_4	struct.h	99
+timer_5	struct.h	100
+timer_6	struct.h	101
+timer_7	struct.h	102
+timer_8	struct.h	103
+timer_9	struct.h	104
+timer_clear	timer.h	/^#define timer_clear(tmr) (tmr = 0.0)$/
 timer_get	timer.c	/^inline double timer_get($/
+timer_global	struct.h	95
+timer_start	timer.h	/^#define timer_start(tmr) do {if(tmr > MAX_RUNTIME)/
+timer_stop	timer.h	/^#define timer_stop(tmr)  do {if(tmr < MAX_RUNTIME)/
+uint	defs.h	36
+vFile	struct.h	86
+val	da_getopt.h	37
+val	struct.h	15
+val	struct.h	19
+val	struct.h	23
 val_lt	sort.c	/^#define val_lt(a, b) ((*a) < (*b))$/
 val_lt	sort.c	72
+val_t	defs.h	32
+verbosity	struct.h	69
 verify_knng_results	util.c	/^void verify_knng_results(da_csr_t *ngbrs1, da_csr_/
+writeNum	struct.h	82
+writeVals	struct.h	81
