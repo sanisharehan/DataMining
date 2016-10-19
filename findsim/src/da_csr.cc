@@ -1091,12 +1091,16 @@ void da_csr_CreateIndex(da_csr_t* const mat, const char what)
 	}
 
 
+    // What is ptr for? It is for storing where would next row index or 
+    // value would start from. Basically gives an idea about number of
+    // elements stored in each row of the compressed matrix.
 	for (i=0; i<nf; ++i) {
 		for (j=fptr[i]; j<fptr[i+1]; ++j)
 			rptr[find[j]]++;
 	}
 	CSRMAKE(i, nr, rptr);
 
+    // Why do this 6*nr thing is not clear to me. Not going to invest more time also here.
 	if (rptr[nr] > 6*nr) {
 		for (i=0; i<nf; ++i) {
 			for (j=fptr[i]; j<fptr[i+1]; ++j)

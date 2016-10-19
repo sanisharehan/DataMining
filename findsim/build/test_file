@@ -1,0 +1,15 @@
+./findsim -mode fast -eps 0.5 -k 10 data/wiki1k.csr data/ij_wiki1k.nbrs.9.10.csr 
+********************************************************************************
+findsim (0.0.1), vInfo: [initial version]
+mode: fast, iFile: data/wiki1k.csr, oFile: data/ij_wiki1k.nbrs.9.10.csr, k: 10, eps: 0.50
+********************************************************************************
+Docs matrix: 1000 rows, 64034 cols, 407330 nnz
+Scaling input matrix.
+Progress Indicator: 10%..20%..30%..40%..50%..60%..70%..80%..90%..100%
+Number of computed similarities: 999000
+Number of neighbors: 108
+Wrote output to data/ij_wiki1k.nbrs.9.10.csr
+TIMES:
+	 Similarity search:  0.0897 (0.09s)
+	 Total time:  0.1716 (0.17s)
+********************************************************************************

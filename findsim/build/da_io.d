@@ -1,4 +1,4 @@
-da_io.d: ../src/da_io.c ../src/includes.h ../src/defs.h ../src/macros.h \
+da_io.d: ../src/da_io.cc ../src/includes.h ../src/defs.h ../src/macros.h \
  ../src/memory.h ../src/struct.h ../src/timer.h ../src/da_mksort.h \
  ../src/da_mkmemory.h ../src/da_getopt.h ../src/proto.h
 

@@ -10,12 +10,12 @@ LIBS := -lm
 INC += -I/usr/local/include/
 
 # C flags  -fopt-info-vec-all 
-CFLAGS += -c -O3 -msse2 -march=native -ffast-math -fstrict-aliasing $(OMPOPTIONS) -DLINUX -D_FILE_OFFSET_BITS=64 -std=c99 -Wall -Wstrict-aliasing -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-label -Wno-unused-variable -Wno-parentheses -Wsequence-point
+CFLAGS += -c -O3 -msse2 -march=native -ffast-math -fstrict-aliasing -fpermissive  $(OMPOPTIONS) -DLINUX -D_FILE_OFFSET_BITS=64 -std=c++11 -Wall -Wsign-compare -Wstrict-aliasing -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-label -Wno-unused-variable -Wno-parentheses -Wsequence-point
 # Other compile choices
 DEBUG := -DNDEBUG # change to nothing to enable internal debug messages.
 RM := rm -rf
 EXE := findsim 
-CC := gcc
+CC := g++
 
 ###
 # Execute make
@@ -23,15 +23,15 @@ CC := gcc
 
 # Add inputs and outputs from these tool invocations to the build variables 
 HEADERS := $(shell ls ../src/*.h)
-C_SRCS := $(shell cd ../src && ls *.c)
-C_OBJS := $(C_SRCS:%.c=%.o)
-C_DEPS := $(C_SRCS:%.c=%.d)
+C_SRCS := $(shell cd ../src && ls *.cc)
+C_OBJS := $(C_SRCS:%.cc=%.o)
+C_DEPS := $(C_SRCS:%.cc=%.d)
 
 # All Targets
 all: findsim
 
 # Objects depend on its source and all headers
-%.o: ../src/%.c $(HEADERS)
+%.o: ../src/%.cc $(HEADERS)
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
 	$(CC) $(DEBUG) $(INC) $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"

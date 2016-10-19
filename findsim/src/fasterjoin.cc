@@ -12,10 +12,107 @@
  */
 
 #include "includes.h"
+#include <stdbool.h>
+#include <set>
+#include <vector>
+
+using namespace std;
 
 // forward declarations.
 idx_t fast_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
         da_ivkv_t *hits, da_ivkv_t *i_cand, idx_t *i_marker, idx_t *ncands);
+
+// Copied create Index function from da_csr and tailored for my needs.
+void fast_CreateIndex(da_csr_t* const mat, const char what, 
+        val_t* r_max, val_t* c_max, bool* ignore_rows)
+{
+	/* 'f' stands for forward, 'r' stands for reverse */
+	ssize_t i, j, k, nf, nr;
+	ptr_t *fptr, *rptr;
+	idx_t *find, *rind;
+	val_t *fval, *rval;
+
+	switch (what) {
+	case DA_COL:
+		nf   = mat->nrows;
+		fptr = mat->rowptr;
+		find = mat->rowind;
+		fval = mat->rowval;
+
+		if (mat->colptr) da_free((void **)&mat->colptr, LTERM);
+		if (mat->colind) da_free((void **)&mat->colind, LTERM);
+		if (mat->colval) da_free((void **)&mat->colval, LTERM);
+
+		nr   = mat->ncols;
+		rptr = mat->colptr = da_pnmalloc(nr+1, "fast_CreateIndex: rptr");
+		rind = mat->colind = da_imalloc(fptr[nf], "fast_CreateIndex: rind");
+		rval = mat->colval = (fval ? da_vmalloc(fptr[nf], "fast_CreateIndex: rval") : NULL);
+		break;
+	case DA_ROW:
+		nf   = mat->ncols;
+		fptr = mat->colptr;
+		find = mat->colind;
+		fval = mat->colval;
+
+		if (mat->rowptr) da_free((void **)&mat->rowptr, LTERM);
+		if (mat->rowind) da_free((void **)&mat->rowind, LTERM);
+		if (mat->rowval) da_free((void **)&mat->rowval, LTERM);
+
+		nr   = mat->nrows;
+		rptr = mat->rowptr = da_pnmalloc(nr+1, "fast_CreateIndex: rptr");
+		rind = mat->rowind = da_imalloc(fptr[nf], "fast_CreateIndex: rind");
+		rval = mat->rowval = (fval ? da_vmalloc(fptr[nf], "fast_CreateIndex: rval") : NULL);
+		break;
+	default:
+		da_errexit( "Invalid index type of %d.\n", what);
+		return;
+	}
+
+
+    // What is ptr for? It is for storing where would next row index or 
+    // value would start from. Basically gives an idea about number of
+    // elements stored in each row of the compressed matrix.
+	for (i=0; i<nf; ++i) {
+		for (j=fptr[i]; j<fptr[i+1]; ++j)
+			rptr[find[j]]++;
+	}
+	CSRMAKE(i, nr, rptr);
+
+    // Why do this 6*nr thing is not clear to me. Not going to invest more time also here.
+	if (rptr[nr] > 6*nr) {
+		for (i=0; i<nf; ++i) {
+			for (j=fptr[i]; j<fptr[i+1]; ++j)
+				rind[rptr[find[j]]++] = i;
+		}
+		CSRSHIFT(i, nr, rptr);
+
+		if (fval) {
+			for (i=0; i<nf; ++i) {
+				for (j=fptr[i]; j<fptr[i+1]; ++j)
+					rval[rptr[find[j]]++] = fval[j];
+			}
+			CSRSHIFT(i, nr, rptr);
+		}
+	}
+	else {
+		if (fval) {
+			for (i=0; i<nf; ++i) {
+				for (j=fptr[i]; j<fptr[i+1]; ++j) {
+					k = find[j];
+					rind[rptr[k]]   = i;
+					rval[rptr[k]++] = fval[j];
+				}
+			}
+		}
+		else {
+			for (i=0; i<nf; ++i) {
+				for (j=fptr[i]; j<fptr[i+1]; ++j)
+					rind[rptr[find[j]]++] = i;
+			}
+		}
+		CSRSHIFT(i, nr, rptr);
+	}
+}
 
 /**
  * Main entry point to KnnIdxJoin.
@@ -65,7 +162,6 @@ void fast_findNeighbors(params_t *params)
     // can tweak whatever way we want.
     da_csr_CompactColumns(docs);
 
-
     if(params->verbosity > 0) {
         printf("Docs matrix: " PRNT_IDXTYPE " rows, " PRNT_IDXTYPE " cols, "
             PRNT_PTRTYPE " nnz\n", docs->nrows, docs->ncols, docs->rowptr[docs->nrows]);
@@ -87,7 +183,6 @@ void fast_findNeighbors(params_t *params)
     //
     da_csr_Scale(docs);
 
-
 	timer_start(params->timer_3); /* overall knn graph construction time */
 
     /* normalize docs rows */
@@ -97,10 +192,61 @@ void fast_findNeighbors(params_t *params)
 
     /* create inverted index - column version of the matrix */
 	timer_start(params->timer_7); /* indexing time */
+
 	da_csr_CreateIndex(docs, DA_COL);
+
+    /*
+    // Some variables for iteration.
+    size_t ri, ci, rci, cri;
+
+    // All the row maximums.
+    val_t* r_max = da_vmalloc(docs->nrows, "Initialize row maximum values.");
+    for (ri = 0; ri < nrows; ++ri) {
+        val_t max = 0;
+        for (rci = docs->rowptr[ri]; rci < docs->rowptr[ri+1]; ++rci) {
+            if (docs->rowval[rci] > max) {
+                max = docs->rowval[rci];
+            }
+        }
+        r_max[ri] = max;
+        //printf("row: %d, max_val: %f \n", ri, r_max[ri]);
+    }
+    da_vsorti(docs->nrows, r_max);
+    for (ri = 0; ri < nrows; ++ri) {
+        printf("row: %d, max_val: %f \n", ri, r_max[ri]);
+    }
+    
+    // All the column maximums.
+    val_t* c_max = da_vmalloc(docs->ncols, "Initialize col maximum values.");
+
+    for (ci = 0; ci < docs->ncols; ++ci) {
+        val_t max = 0;
+        for (cri = docs->colptr[ci]; cri < docs->colptr[ci+1]; ++cri) {
+            if (docs->colval[cri] > max) {
+                max = docs->colval[cri];
+            }
+        }
+        c_max[ci] = max;
+        //printf("col: %d, max_val: %f \n", ci, c_max[ci]);
+    }
+    da_vsorti(docs->ncols, c_max);
+    for (ci = 0; ci < docs->ncols; ++ci) {
+        printf("col: %d, max_val: %f \n", ci, c_max[ci]);
+    }
+
+    // Stores whether we can ignore the document totally for doc similarity computations.
+    bool* ignore_rows = (bool*) malloc(sizeof(bool*) * docs->nrows);
+    for (ri = 0; ri < docs->nrows; ++ri) {
+        val_t max_dot = 0;
+        for (rci = docs->rowptr[ri]; rci < docs->rowptr[ri + 1]; ++rci) {
+            max_dot += c_max[docs->rowind[rci]] * docs->rowval[rci];
+        }
+        printf("row: %d, max_dot: %f \n", ri, max_dot);
+    }*/
+
 	timer_stop(params->timer_7); /* indexing time */
 
-	/* allocate memory for the search */
+    /* allocate memory for the search */
     timer_start(params->timer_5); /* memory allocation time */
     hits   = da_ivkvsmalloc(nrows, (da_ivkv_t) {0, 0.0}, "findNeighbors: hits"); /* empty list of key-value structures */
     cand   = da_ivkvsmalloc(nrows, (da_ivkv_t) {0, 0.0}, "findNeighbors: cand"); /* empty list of key-value structures */
@@ -122,12 +268,65 @@ void fast_findNeighbors(params_t *params)
 	if(params->verbosity > 0)
 		printf("Progress Indicator: ");
 
-	/* execute search */
+    // Accumulate the results for all together.
+    std::vector<std::vector<float>> A;
+    A.reserve(docs->nrows);
+    for (int i=0; i < docs->nrows; ++i) {
+        A[i].resize(docs->nrows, 0);
+    }
+
+    float temp = 0;
+    for (int i=0; i < docs->ncols; ++i) {
+        for (int j = docs->colptr[i]; j < docs->colptr[i+1]; ++j) {
+            for (int k = j+1; k < docs->colptr[i+1]; ++k) {
+                temp = docs->colval[j] * docs->colval[k];
+                A[docs->colind[j]][docs->colind[k]] += temp;
+            }
+        }
+    }
+
+    for (int i=0; i < docs->nrows; ++i) {
+        for (int j=0; j < i; ++j) {
+            A[i][j] = A[j][i];
+        }
+    }
+
+    nsims = 0;
+    for (int i=0; i < docs->nrows; ++i) {
+        std::set<std::pair<float, int>> topk;
+        for (int j=0; j < docs->nrows; ++j) {
+            if (i == j) { continue; }
+            if (A[i][j] <= params->epsilon) { continue; }
+            if (topk.size() < params->k) {
+                topk.insert(std::pair<float, int>(A[i][j], j));
+            } else {
+                // TODO (sanisha): Add code here.
+            }
+        }
+
+        std::set<std::pair<int, float>> reversed_topk;
+        for (auto topk_ele : topk) {
+            reversed_topk
+                .insert(std::pair<int, float>(topk_ele.second, topk_ele.first));
+        }
+
+        for (auto topk_ele : reversed_topk) {
+            neighbors->rowind[nsims] = topk_ele.first;
+            neighbors->rowval[nsims] = topk_ele.second;
+            ++nsims;
+        }
+        neighbors->rowptr[i+1] = nsims;
+		if ( params->verbosity > 0 && i % progressInd == 0 ){
+            da_progress_advance_steps(pct, 10);
+		}
+    }
+
+	/* // execute search 
 	for(nsims=0, i=0; i < nrows; i++){
 		k = fast_getSimilarRows(docs, i, params->k, params->epsilon, hits, cand, marker, &ncand);
 		ncands += ncand;
 
-		/* transfer candidates to output structure */
+		// transfer candidates to output structure.
 		for(j=0; j < k; j++){
 	        neighbors->rowind[nsims] = hits[j].key;
 	        neighbors->rowval[nsims] = hits[j].val;
@@ -135,11 +334,11 @@ void fast_findNeighbors(params_t *params)
 		}
         neighbors->rowptr[i+1] = nsims;
 
-		/* update progress indicator */
+		// update progress indicator
 		if ( params->verbosity > 0 && i % progressInd == 0 ){
             da_progress_advance_steps(pct, 10);
 		}
-	}
+	}*/
 	if(params->verbosity > 0){
             da_progress_finalize_steps(pct, 10);
 	    printf("\n");
@@ -211,7 +410,7 @@ idx_t fast_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
                 if (marker[k] == -1) {
                     cand[ncand].key = k;
                     cand[ncand].val = 0;
-                    marker[k]       = ncand++;
+                    marker[k] = ncand++;
                 }
                 cand[marker[k]].val += colval[j] * qval[ii];
             }
