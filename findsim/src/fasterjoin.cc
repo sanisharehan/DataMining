@@ -192,6 +192,7 @@ void fast_findNeighbors(params_t *params)
 
     /* create inverted index - column version of the matrix */
 	timer_start(params->timer_7); /* indexing time */
+    printf("Timer started\n");
 
 	da_csr_CreateIndex(docs, DA_COL);
 
@@ -270,7 +271,7 @@ void fast_findNeighbors(params_t *params)
 
     // Accumulate the results for all together.
     std::vector<std::vector<float>> A;
-    A.reserve(docs->nrows);
+    A.resize(docs->nrows);
     for (int i=0; i < docs->nrows; ++i) {
         A[i].resize(docs->nrows, 0);
     }

@@ -121,6 +121,7 @@ PROGRAM_NAME " - Compute the exact Cosine K-Nearest Neighbor graph",
 const da_StringMap_t mode_options[] = {
   {"ij",                MODE_IDXJOIN},
   {"fast",              MODE_FAST},
+  {"dynamic",           MODE_DYNAMIC},
   {"idxjoin",           MODE_IDXJOIN},
   /** Add new modes here if desired. Mode constants are defined in defs.h */
 

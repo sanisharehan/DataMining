@@ -66,6 +66,7 @@ typedef unsigned int uint;
 #define MODE_RECALL             96  /* Compute recall given true solution */
 #define MODE_IDXJOIN            1   /* IdxJoin */
 #define MODE_FAST               2   /* Faster Code */
+#define MODE_DYNAMIC            3   /* Idx Join using dynamic indices */
 
 
 /* CSR structure components */
