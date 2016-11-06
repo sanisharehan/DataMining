@@ -76,7 +76,7 @@ void UpdateSimilarities(const int doc_id,
 /**
  * Main entry point to Faster Dynamic Find Neighbors.
  */
-void dynamic_findNeighbors(params_t *params)
+void dynamic_findNeighbors_version_2(params_t *params)
 {
     // TODO(sanisha): Remove unused variables.
 	ssize_t i, j, k, nneighbs;
