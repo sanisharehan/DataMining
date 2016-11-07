@@ -49,6 +49,8 @@ typedef unsigned int uint;
 #define CMD_READ_VALS           38
 #define CMD_READ_NUMBERING      39
 #define CMD_VERIFY              40
+#define CMD_STATS               45
+#define CMD_FLDELTA             50
 #define CMD_VERBOSITY           105
 #define CMD_VERSION             109
 #define CMD_HELP                110
@@ -65,7 +67,7 @@ typedef unsigned int uint;
 #define MODE_INFO               97  /* Find information about a matrix */
 #define MODE_RECALL             96  /* Compute recall given true solution */
 #define MODE_IDXJOIN            1   /* IdxJoin */
-#define MODE_FAST               2   /* Faster Code */
+#define MODE_FAST               2   /* Faster Code with memory allocation */
 #define MODE_DYNAMIC            3   /* Idx Join using dynamic indices */
 
 

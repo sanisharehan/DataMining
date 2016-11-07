@@ -17,10 +17,6 @@
 #include <vector>
 #include <iostream>
 
-// forward declarations
-idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
-        da_ivkv_t *hits, da_ivkv_t *i_cand, idx_t *i_marker, idx_t *ncands);
-
 
 using namespace std;
 
@@ -30,9 +26,8 @@ using namespace std;
 void UpdateSimilarities(const int doc_id,
     const std::vector<std::vector<std::pair<int, float>>>& dynamic_index,
     const float threshold, da_csr_t* docs, 
-    std::vector<std::set<std::pair<float, int>, 
-                         std::greater<std::pair<float, int>>>>* similarities) {
-
+    std::vector<std::set<std::pair<float, int>, std::greater<std::pair<float, int>>>>* similarities) {
+    
     // Store all the dot products.
     std::vector<float> dot_products;
     dot_products.resize(doc_id + 1, 0);
@@ -46,7 +41,7 @@ void UpdateSimilarities(const int doc_id,
     }
 
     // If any dot product is greater than threshold, store that.
-    for(int i=0; i < dot_products.size(); ++i) {
+    for(size_t i=0; i < dot_products.size(); ++i) {
         if (dot_products[i] >= threshold) {
             (*similarities)[doc_id].insert({dot_products[i], i});
             (*similarities)[i].insert({dot_products[i], doc_id});
@@ -61,17 +56,13 @@ void UpdateSimilarities(const int doc_id,
 void dynamic_findNeighbors(params_t *params)
 {
 
-	ssize_t i, j, k, nneighbs;
-	size_t rid, nsims, ncands, nnz;
-	idx_t nrows, ncand, progressInd, pct;
-	idx_t *marker=NULL;
-	da_ivkv_t *hits=NULL, *cand=NULL;
+	size_t nsims, nnz;
+	idx_t nrows;
 	da_csr_t *docs, *neighbors=NULL;
 
 	docs    = params->docs;
 	nrows   = docs->nrows;  // num rows
-	ncands  = 0; // number of considered candidates (computed similarities)
-	nsims   = 0; // number of similar documents found
+	nsims   = 0;            // number of similar documents found
 
 	/** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
 
@@ -104,28 +95,26 @@ void dynamic_findNeighbors(params_t *params)
     neighbors->rowval = da_vmalloc(nnz, "simSearchSetup: neighbors->rowval");
     neighbors->rowptr[0] = 0;
  
-    /////////////////////////////////
-    // SANISHA's CODE STARTS HERE. //
-    /////////////////////////////////
-    printf("Rows=%d and Cols=%d\n", docs->nrows, docs->ncols);
-
     // Data structure for storing neighbors for each vector with 
     // similarity greater than threshold.
-    // e.g: v1 -> [(.4, v3), ()]
+    // e.g: Row0: v1 -> [(.4, v3), ()]
+    //      Row1: v2 -> [(.7, v5), (.8, v6)]
+    //      ...
     std::vector<std::set<std::pair<float, int>, 
                          std::greater<std::pair<float, int>>>> similarities;
     
     // Resize this vector to match the number of documents.
     similarities.resize(docs->nrows);
     
-    // Data structure for storing the dynamic index.
+    // Data structure for storing the dynamic index. Its a vector of vectors.
+    // Each row indicates the inverted index for an attribute.
     // e.g
-    // I1 -> [(v1, .2), (v45, .5),....]
-    // I2 -> [(v200, .7), (v14, .23),....]
+    // Row0: I1 -> [(v1, .2), (v45, .5),....]
+    // Row1: I2 -> [(v200, .7), (v14, .23),....]
     // ...
     std::vector<std::vector<std::pair<int, float>>> dynamic_index;
     
-    // Resize the index to match the feature size.
+    // Resize the index to match the feature size i.e. maximum number of features.
     dynamic_index.resize(docs->ncols);
    
     // This piece of code is supposed to calculate
@@ -140,7 +129,7 @@ void dynamic_findNeighbors(params_t *params)
     // Go over all the similarities for each document vector and find out the
     // top K.
     nsims = 0;
-    for (int i=0; i < similarities.size(); ++i) {
+    for (size_t i=0; i < similarities.size(); ++i) {
         int j = 0;
         for (const auto& dot_product_similarity : similarities[i]) {
             if (j >= params->k) {
@@ -155,6 +144,8 @@ void dynamic_findNeighbors(params_t *params)
     }
 
 	timer_stop(params->timer_3); // find neighbors time
+
+    printf("Number of neighbors: %zu\n", nsims);
 
     /* write ouptut */
 	if(params->oFile){

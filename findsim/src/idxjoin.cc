@@ -198,8 +198,10 @@ idx_t da_getSimilarRows(da_csr_t *mat, idx_t rid, idx_t nsim, float eps,
             k++;
 	    }
 	}
+	/* sort output in decreasing order of similarity */
+	da_ivkvsortd(k, hits);
 
-	if (i_marker == NULL)
+    if (i_marker == NULL)
 		da_free((void **)&marker, LTERM);
 	if (i_cand == NULL)
 		da_free((void **)&cand, LTERM);

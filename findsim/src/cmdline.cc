@@ -20,7 +20,10 @@ static struct da_option long_options[] = {
     {"verb",              1,      0,      CMD_VERBOSITY},
     {"version",           0,      0,      CMD_VERSION},
 	{"v",                 1,      0,      CMD_VERIFY},
-	{"fmtRead",           1,      0,      CMD_FMT_READ},
+	{"stats",             0,      0,      CMD_STATS},
+    {"fldelta",           1,      0,      CMD_FLDELTA},
+    {"fd",                1,      0,      CMD_FLDELTA},
+    {"fmtRead",           1,      0,      CMD_FMT_READ},
 	{"readZidx",          0,      0,      CMD_FMT_READ_NUM},
 	{"readVals",          1,      0,      CMD_READ_VALS},
 	{"fmtWrite",          1,      0,      CMD_FMT_WRITE},
@@ -162,8 +165,10 @@ void cmdline_parse(params_t *params, int argc, char *argv[])
 	params->mode         = MODE_IDXJOIN;
     params->k            = 10;
 	params->epsilon      = 0.5;
-
-	params->iFile        = NULL;
+    
+    params->fldelta      = 1e-4;
+	
+    params->iFile        = NULL;
 	params->fmtRead      = 0;
 	params->readVals     = 1;
 	params->readNum      = 1;
@@ -257,7 +262,17 @@ void cmdline_parse(params_t *params, int argc, char *argv[])
 		case CMD_FMT_WRITE_NUM:
 			params->writeNum = 0;
 			break;
+    
+        case CMD_STATS:
+            params->stats = 1;
+            break;
 
+        case CMD_FLDELTA:
+            if (da_optarg) {
+                if ((params->fldelta = atof(da_optarg)) <= 0)
+                    da_errexit("The -fldelta value must be greater than 0.\n");
+            }
+            break;
 
 		case CMD_VERSION:
 			printf("%s (%d.%d.%d), vInfo: [%s]\n", argv[0], VER_MAJOR, VER_MINOR,
