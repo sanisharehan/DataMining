@@ -1,12 +1,15 @@
 /*!
- \file  dynamic_idxjoin.c
- \brief This file contains IdxJoin related functions. IdxJoin is equivalent to a smart linear search,
- where each query document is compared only against other documents (candidates) that have at least
- one feature in common with the query. All query-candidate similarities are fully computed before
- sorting the results and retaining only results that should be part of the output (top-$k$ results
- with at least $\epsilon$ similarity).
+ \file  dynamic_index_speedup.c
 
- \author David C. Anastasiu
+ \brief This file contains Dynamic Inverted Index algorithm related functions.
+ This algorithm builds the inverted indices dynamically and incrementally, improving
+ the memory footprint and locality of the algorithm. Also, we leverage the 
+ commutative property of cosine similarity function which reduces the similarity
+ calculations by half, thus further improving the overall speed. The final results
+ are sorted based on their respective similarities and only those results are retained
+ that should be part of the output (top-$k$ results with at least $\epsilon$ similarity).
+
+ \author Sanisha Rehan
  */
 
 #include "includes.h"
@@ -57,7 +60,7 @@ void dynamic_findNeighbors(params_t *params)
 {
 
 	size_t nsims, nnz;
-	idx_t nrows;
+	idx_t nrows, progress_ind, pct;
 	da_csr_t *docs, *neighbors=NULL;
 
 	docs    = params->docs;
@@ -95,6 +98,12 @@ void dynamic_findNeighbors(params_t *params)
     neighbors->rowval = da_vmalloc(nnz, "simSearchSetup: neighbors->rowval");
     neighbors->rowptr[0] = 0;
  
+    // Initialize progress indicator
+    da_progress_init_steps(pct, progress_ind, nrows, 10);
+    if (params->verbosity > 0) {
+        printf("Progress Indicator: ");
+    }
+
     // Data structure for storing neighbors for each vector with 
     // similarity greater than threshold.
     // e.g: Row0: v1 -> [(.4, v3), ()]
@@ -124,6 +133,12 @@ void dynamic_findNeighbors(params_t *params)
         for (int j = docs->rowptr[i]; j < docs->rowptr[i+1]; ++j) {
             dynamic_index[docs->rowind[j]].push_back({i, docs->rowval[j]});     
         }
+
+        // Update progress indicator.
+        if (params->verbosity > 0 && i % progress_ind == 0) {
+            da_progress_advance_steps(pct, 10);
+        }
+
     }
 
     // Go over all the similarities for each document vector and find out the
@@ -141,6 +156,12 @@ void dynamic_findNeighbors(params_t *params)
             ++nsims;
         }
         neighbors->rowptr[i+1] = nsims;
+    }
+
+    // Print progress indicator
+    if (params->verbosity > 0) {
+        da_progress_finalize_steps(pct, 10);
+        printf("\n");
     }
 
 	timer_stop(params->timer_3); // find neighbors time
