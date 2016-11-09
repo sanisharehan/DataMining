@@ -1,10 +1,18 @@
 /*!
- \file  dynamic_idxjoin.c
- \author Sanisha Rehan
+ \file  dynamic_index_speedup_version_2.cc
 
  This file contains a faster implementation of the all pair simialrities.
  Basic idea is to leverage the dynamic index. 
     - First and biggest advantage of doing that is it reduces computation by half.
+ 
+ The algorithm is based on exploiting threshold during indexing technique as
+ proposed by authors of research paper:
+ 
+ R. J. Bayardo, Y. Ma, and R. Srikant, “Scaling up all pairs similarity search,” 
+ in Proceedings of the 16th International Conference on World Wide Web, ser. WWW 
+ ’07. New York, NY, USA: ACM, 2007, pp. 131–140”
+
+\author Sanisha Rehan
  */
 
 #include "includes.h"
@@ -17,6 +25,9 @@
 
 using namespace std;
 
+//
+// This function computes the prefix cosine similarity of two given vectors.
+//
 float getPrefixDotProduct(int vector_id, int vector_with_prefix_id,
         const std::vector<int>& vector_prefix_indices, da_csr_t* docs) {
     float result = 0;
@@ -37,7 +48,6 @@ float getPrefixDotProduct(int vector_id, int vector_with_prefix_id,
 // This function is supposed to find similarities with the index 
 // generated till now. This partial index would include data corresponfing
 // to indices till doc_id.
-int exact_calc = 0;
 void UpdateSimilarities(const int doc_id,
     const std::vector<std::vector<std::pair<int, float>>>& dynamic_index,
     const float threshold, 
@@ -62,7 +72,6 @@ void UpdateSimilarities(const int doc_id,
     for(int i=0; i < dot_products.size(); ++i) {
         float new_product = 0.0;
         if (dot_products[i] > 0) {
-            exact_calc += 1;
             new_product = dot_products[i] + getPrefixDotProduct(doc_id, i, vector_prefix_indices, docs);
         }
         if (new_product >= threshold) {
@@ -78,20 +87,15 @@ void UpdateSimilarities(const int doc_id,
  */
 void dynamic_findNeighbors_version_2(params_t *params)
 {
-    // TODO(sanisha): Remove unused variables.
-	ssize_t i, j, k, nneighbs;
-	size_t rid, nsims, ncands, nnz;
-	idx_t nrows, ncand, progressInd, pct;
-	idx_t *marker=NULL;
-	da_ivkv_t *hits=NULL, *cand=NULL;
+	size_t nsims, nnz;
+    idx_t nrows, progress_ind, pct;
 	da_csr_t *docs, *neighbors=NULL;
 
 	docs    = params->docs;
 	nrows   = docs->nrows;  // num rows
-	ncands  = 0; // number of considered candidates (computed similarities)
 	nsims   = 0; // number of similar documents found
 
-	/** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
+    /** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
 
     /* compact the column space */
     da_csr_CompactColumns(docs);
@@ -125,9 +129,11 @@ void dynamic_findNeighbors_version_2(params_t *params)
     neighbors->rowval = da_vmalloc(nnz, "simSearchSetup: neighbors->rowval");
     neighbors->rowptr[0] = 0;
  
-    /////////////////////////////////
-    // SANISHA's CODE STARTS HERE. //
-    /////////////////////////////////
+    // Initialize progress indicator
+	da_progress_init_steps(pct, progress_ind, nrows, 10);
+    if (params->verbosity > 0) {
+        printf("Progress Indicator: ");
+    }
     
     // Find maximum values for each feature/column.
     std::vector<float> col_max;
@@ -144,8 +150,6 @@ void dynamic_findNeighbors_version_2(params_t *params)
     // similarity greater than threshold.
     // e.g: v1 -> [(.4, v3), ()]
     // We use set with greater so that we can find top K sorted by default.
-    // TODO(Sanisha): Try not using set and use vector. Then try to use set of 
-    // size K (i.e. heap) to get the top K similar elements.
     std::vector<std::set<std::pair<float, int>, 
                          std::greater<std::pair<float, int>>>> similarities;
     
@@ -179,10 +183,14 @@ void dynamic_findNeighbors_version_2(params_t *params)
             b += col_max[docs->rowind[j]] * docs->rowval[j];
             if (b >= params->epsilon) {
                 dynamic_index[docs->rowind[j]].push_back({i, docs->rowval[j]});     
-                // docs->rowval[j] = 0;
             } else {
                 vector_prefix_indices[i] = j;
             }
+        }
+
+        // Update progress indicator.
+        if (params->verbosity > 0 && i % progress_ind == 0) {
+            da_progress_advance_steps(pct, 10);
         }
     }
 
@@ -203,6 +211,12 @@ void dynamic_findNeighbors_version_2(params_t *params)
         neighbors->rowptr[i+1] = nsims;
     }
 
+    // Print progress indicator.
+    if (params->verbosity > 0) {
+        da_progress_finalize_steps(pct, 10);
+        printf("\n");
+    }
+
 	timer_stop(params->timer_3); // find neighbors time
 
     /* Write ouptut */
@@ -210,6 +224,5 @@ void dynamic_findNeighbors_version_2(params_t *params)
 	    da_csr_Write(neighbors, params->oFile, DA_FMT_CSR, 1, 1);
 	    printf("Wrote output to %s\n", params->oFile);
 	}
-    cout << "Total exact calculation: " << exact_calc << endl;
 	da_csr_Free(&neighbors);
 }
