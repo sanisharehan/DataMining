@@ -54,7 +54,7 @@ void UpdateSimilarities(const int doc_id,
  
 
 /**
- * Main entry point to KnnIdxJoin.
+ * Main entry point to Dynamic Inverted Index Algorithm.
  */
 void dynamic_findNeighbors(params_t *params)
 {
@@ -67,7 +67,7 @@ void dynamic_findNeighbors(params_t *params)
 	nrows   = docs->nrows;  // num rows
 	nsims   = 0;            // number of similar documents found
 
-	/** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
+    /** Pre-process input matrix: remove empty columns, ensure sorted column ids, scale by IDF **/
 
     /* compact the column space */
     da_csr_CompactColumns(docs);
@@ -89,7 +89,7 @@ void dynamic_findNeighbors(params_t *params)
     /* normalize docs rows */
     da_csr_Normalize(docs, DA_ROW, 2);
 
-    /*Initialize the output data structure.*/
+    // Initialize the output data structure.
     neighbors = da_csr_Create();
     neighbors->nrows = neighbors->ncols = nrows;
     nnz = params->k * docs->nrows; /* max number of neighbors */
