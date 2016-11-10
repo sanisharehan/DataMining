@@ -29,6 +29,7 @@ void      freeParams(params_t** params);
 void      findNeighbors(params_t *params);
 void      fast_findNeighbors(params_t *params);
 void      dynamic_findNeighbors(params_t *params);
+void      dynamic_findNeighbors_version_2(params_t *params);
 
 /* util.c */
 void      da_errexit(const char* const f_str,...);

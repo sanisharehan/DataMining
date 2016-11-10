@@ -62,6 +62,10 @@ int main(int argc, char *argv[]) {
         dynamic_findNeighbors(params);
         break;
 
+    case MODE_DYNAMIC_2:
+        dynamic_findNeighbors_version_2(params);
+        break;
+
     case MODE_TESTEQUAL:
         da_testMatricesEqual(params);
         break;

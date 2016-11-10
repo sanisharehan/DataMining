@@ -126,6 +126,7 @@ const da_StringMap_t mode_options[] = {
   {"fast",              MODE_FAST},
   {"dynamic",           MODE_DYNAMIC},
   {"idxjoin",           MODE_IDXJOIN},
+  {"dynamic_2",         MODE_DYNAMIC_2},
   /** Add new modes here if desired. Mode constants are defined in defs.h */
 
   {"recall",            MODE_RECALL},
@@ -162,7 +163,7 @@ void cmdline_parse(params_t *params, int argc, char *argv[])
 	params->verbosity    = 1;
 	params->stats        = 0;
 
-	params->mode         = MODE_IDXJOIN;
+	params->mode         = MODE_DYNAMIC;
     params->k            = 10;
 	params->epsilon      = 0.5;
     

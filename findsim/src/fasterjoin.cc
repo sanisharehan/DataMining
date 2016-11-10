@@ -1,14 +1,15 @@
 /*!
- \file  fasterjoin.c
+ \file  fasterjoin.cc
 
- This file is an attempt to improve performance over the existing index join.
-
- \brief This file contains IdxJoin related functions. IdxJoin is equivalent to a smart linear search,
- where each query document is compared only against other documents (candidates) that have at least
- one feature in common with the query. All query-candidate similarities are fully computed before
- sorting the results and retaining only results that should be part of the output (top-$k$ results
+ \brief This file is an attempt to improve performance over the existing index join.
+ In this, we attempt to reduce the similarity computations by using the commutative 
+ property of cosine similarity i.e.
+    dot(x, y) = dot(y, x).
+ All query-candidate similarities are fully computed before sorting the results and 
+ retaining only results that should be part of the output (top-$k$ results
  with at least $\epsilon$ similarity).
 
+ \author Sanisha Rehan
  */
 
 #include "includes.h"
@@ -115,7 +116,7 @@ void fast_CreateIndex(da_csr_t* const mat, const char what,
 }
 
 /**
- * Main entry point to KnnIdxJoin.
+ * Main entry point to faster index join.
  */
 void fast_findNeighbors(params_t *params)
 {
@@ -300,8 +301,6 @@ void fast_findNeighbors(params_t *params)
             if (A[i][j] <= params->epsilon) { continue; }
             if (topk.size() < params->k) {
                 topk.insert(std::pair<float, int>(A[i][j], j));
-            } else {
-                // TODO (sanisha): Add code here.
             }
         }
 

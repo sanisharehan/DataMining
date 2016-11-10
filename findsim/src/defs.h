@@ -69,7 +69,7 @@ typedef unsigned int uint;
 #define MODE_IDXJOIN            1   /* IdxJoin */
 #define MODE_FAST               2   /* Faster Code with memory allocation */
 #define MODE_DYNAMIC            3   /* Idx Join using dynamic indices */
-
+#define MODE_DYNAMIC_2          4   /* Idx Join using dynamic indices and threshold */
 
 /* CSR structure components */
 #define DA_ROW                  1   /* row-based structure */
