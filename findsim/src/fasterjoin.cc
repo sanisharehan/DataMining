@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #include <set>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 
@@ -198,6 +200,7 @@ void fast_findNeighbors(params_t *params)
 	da_csr_CreateIndex(docs, DA_COL);
 
     /*
+    // DID NOT WORK
     // Some variables for iteration.
     size_t ri, ci, rci, cri;
 
@@ -255,7 +258,6 @@ void fast_findNeighbors(params_t *params)
     marker = da_ismalloc(nrows, -1, "findNeighbors: marker");  /* array of all -1 values */
 
 
-    /// COME BACK HERE AND START READING FROM THIS POINT !!!!!
     neighbors = da_csr_Create();
     neighbors->nrows = neighbors->ncols = nrows;
     nnz = params->k * docs->nrows; /* max number of neighbors */
@@ -270,6 +272,8 @@ void fast_findNeighbors(params_t *params)
 	if(params->verbosity > 0)
 		printf("Progress Indicator: ");
 
+    // Method 1 Application: Reducing similarity calculations using commutative property
+    // of cosine similarity.
     // Accumulate the results for all together.
     std::vector<std::vector<float>> A;
     A.resize(docs->nrows);
@@ -277,6 +281,7 @@ void fast_findNeighbors(params_t *params)
         A[i].resize(docs->nrows, 0);
     }
 
+    // Compute the results for sim(x, y) and save into memory.
     float temp = 0;
     for (int i=0; i < docs->ncols; ++i) {
         for (int j = docs->colptr[i]; j < docs->colptr[i+1]; ++j) {
@@ -287,6 +292,7 @@ void fast_findNeighbors(params_t *params)
         }
     }
 
+    // Copy the results to lower half of array using sim(y, x) = sim(x, y).
     for (int i=0; i < docs->nrows; ++i) {
         for (int j=0; j < i; ++j) {
             A[i][j] = A[j][i];
@@ -299,20 +305,27 @@ void fast_findNeighbors(params_t *params)
         for (int j=0; j < docs->nrows; ++j) {
             if (i == j) { continue; }
             if (A[i][j] <= params->epsilon) { continue; }
+            
+            // To keep only top k elements in set.
             if (topk.size() < params->k) {
                 topk.insert(std::pair<float, int>(A[i][j], j));
+            } else if (topk.size() == params->k) {
+                // Check if the given similarity value is more than the minimum
+                // value present in the set or not.
+                std::set<std::pair<float, int>>::iterator topk_it;
+                // This gives the minimum element in set.
+                topk_it = topk.begin();
+                if (topk_it->first < A[i][j]) {
+                    topk.erase(topk_it);
+                    topk.insert(std::pair<float, int>(A[i][j], j));
+                }
             }
         }
 
-        std::set<std::pair<int, float>> reversed_topk;
-        for (auto topk_ele : topk) {
-            reversed_topk
-                .insert(std::pair<int, float>(topk_ele.second, topk_ele.first));
-        }
-
-        for (auto topk_ele : reversed_topk) {
-            neighbors->rowind[nsims] = topk_ele.first;
-            neighbors->rowval[nsims] = topk_ele.second;
+        // Write outputs in compressed form.
+        for (const auto& topk_it : topk) {
+            neighbors->rowind[nsims] = topk_it.second;
+            neighbors->rowval[nsims] = topk_it.first;
             ++nsims;
         }
         neighbors->rowptr[i+1] = nsims;
@@ -321,24 +334,6 @@ void fast_findNeighbors(params_t *params)
 		}
     }
 
-	/* // execute search 
-	for(nsims=0, i=0; i < nrows; i++){
-		k = fast_getSimilarRows(docs, i, params->k, params->epsilon, hits, cand, marker, &ncand);
-		ncands += ncand;
-
-		// transfer candidates to output structure.
-		for(j=0; j < k; j++){
-	        neighbors->rowind[nsims] = hits[j].key;
-	        neighbors->rowval[nsims] = hits[j].val;
-	        nsims++;
-		}
-        neighbors->rowptr[i+1] = nsims;
-
-		// update progress indicator
-		if ( params->verbosity > 0 && i % progressInd == 0 ){
-            da_progress_advance_steps(pct, 10);
-		}
-	}*/
 	if(params->verbosity > 0){
             da_progress_finalize_steps(pct, 10);
 	    printf("\n");
