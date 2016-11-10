@@ -340,7 +340,6 @@ void fast_findNeighbors(params_t *params)
 	}
 	timer_stop(params->timer_3); // find neighbors time
 
-    printf("Number of computed similarities: %zu\n", ncands);
     printf("Number of neighbors: %zu\n", nsims);
 
 	/* write ouptut */

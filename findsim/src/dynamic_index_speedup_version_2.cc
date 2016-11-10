@@ -53,8 +53,7 @@ void UpdateSimilarities(const int doc_id,
     const float threshold, 
     const std::vector<int>& vector_prefix_indices,
     da_csr_t* docs, 
-    std::vector<std::set<std::pair<float, int>, 
-                         std::greater<std::pair<float, int>>>>* similarities) {
+    std::vector<std::vector<std::pair<float, int>>>* similarities) {
 
     // Store all the dot products.
     std::vector<float> dot_products;
@@ -75,8 +74,8 @@ void UpdateSimilarities(const int doc_id,
             new_product = dot_products[i] + getPrefixDotProduct(doc_id, i, vector_prefix_indices, docs);
         }
         if (new_product >= threshold) {
-            (*similarities)[doc_id].insert({new_product, i});
-            (*similarities)[i].insert({new_product, doc_id});
+            (*similarities)[doc_id].push_back(std::pair<float, int>(new_product, i));
+            (*similarities)[i].push_back(std::pair<float, int>(new_product, doc_id));
         }
     }
 }
@@ -144,14 +143,11 @@ void dynamic_findNeighbors_version_2(params_t *params)
         }
     }
 
-    printf("Rows=%d and Cols=%d\n", docs->nrows, docs->ncols);
-
     // Data structure for storing neighbors for each vector with 
     // similarity greater than threshold.
     // e.g: v1 -> [(.4, v3), ()]
     // We use set with greater so that we can find top K sorted by default.
-    std::vector<std::set<std::pair<float, int>, 
-                         std::greater<std::pair<float, int>>>> similarities;
+    std::vector<std::vector<std::pair<float, int>>> similarities;
     
     // Resize this vector to match the number of documents.
     similarities.resize(docs->nrows);
@@ -197,27 +193,46 @@ void dynamic_findNeighbors_version_2(params_t *params)
     // Go over all the similarities for each document vector and find out the
     // top K.
     nsims = 0;
-    for (int i=0; i < similarities.size(); ++i) {
+    for (size_t i=0; i < similarities.size(); ++i) {
         int j = 0;
+        // This set has top k similarities in ascending order.
+        std::set<std::pair<float, int>> topk_ele;
         for (const auto& dot_product_similarity : similarities[i]) {
-            if (j >= params->k) {
-                break;
+            if (topk_ele.size() < params->k) {
+                topk_ele.insert(std::pair<float, int>(dot_product_similarity.first, dot_product_similarity.second));
+            } else if (topk_ele.size() == params->k) {
+                // Check if the given similarity value is more than the minimum
+                // value present in the set or not.
+                std::set<std::pair<float, int>>::iterator topk_it;
+                topk_it = topk_ele.begin();
+                if (topk_it->first < dot_product_similarity.first) {
+                    topk_ele.erase(topk_it);
+                    topk_ele.insert(std::pair<float, int>(dot_product_similarity.first, dot_product_similarity.second));
+                }
             }
-            neighbors->rowind[nsims] = dot_product_similarity.second;
-            neighbors->rowval[nsims] = dot_product_similarity.first;
-            ++j;
+        }
+            
+        // Create a set to get top k similarities in descending order.
+        std::set<std::pair<float, int>, std::greater<std::pair<float, int>>> topk_ele_desc;
+        topk_ele_desc.insert(topk_ele.begin(), topk_ele.end());
+            
+        for (const auto &top_ele : topk_ele_desc) {
+            neighbors->rowind[nsims] = top_ele.second;
+            neighbors->rowval[nsims] = top_ele.first;
             ++nsims;
         }
         neighbors->rowptr[i+1] = nsims;
     }
 
-    // Print progress indicator.
+    // Print progress indicator
     if (params->verbosity > 0) {
         da_progress_finalize_steps(pct, 10);
         printf("\n");
     }
 
 	timer_stop(params->timer_3); // find neighbors time
+
+    printf("Number of neighbors: %zu\n", nsims);
 
     /* Write ouptut */
 	if(params->oFile){
