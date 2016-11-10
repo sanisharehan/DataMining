@@ -1,14 +1,25 @@
 /*!
  \file  dynamic_index_speedup.c
 
- \brief This file contains Dynamic Inverted Index algorithm related functions.
- This algorithm builds the inverted indices dynamically and incrementally, improving
- the memory footprint and locality of the algorithm. Also, we leverage the 
- commutative property of cosine similarity function which reduces the similarity
- calculations by half, thus further improving the overall speed. The final results
- are sorted based on their respective similarities and only those results are retained
- that should be part of the output (top-$k$ results with at least $\epsilon$ similarity).
-
+ \brief This file contains Dynamic Inverted Index algorithm related functions. This 
+ algorithm builds the inverted indices dynamically and incrementally, improving the 
+ memory footprint and locality of the algorithm. Also, we leverage the commutative 
+ property of cosine similarity function 
+ 
+    i.e. cos(x, y) = cos(y, x)
+ 
+ which reduces the similarity calculations by half, thus further improving the overall 
+ speed. The final results are sorted based on their respective similarities and only 
+ those results are retained that should be part of the output (top-$k$ results with at 
+ least $\epsilon$ similarity).
+ 
+ The algorithm is based on dynamic index building technique as proposed by authors of 
+ research paper:
+ 
+ R. J. Bayardo, Y. Ma, and R. Srikant, “Scaling up all pairs similarity search,” 
+ in Proceedings of the 16th International Conference on World Wide Web, ser. WWW 
+ ’07. New York, NY, USA: ACM, 2007, pp. 131–140”
+ 
  \author Sanisha Rehan
  */
 
